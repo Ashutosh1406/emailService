@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
-	"github.com/joho/godotenv"
 	"gopkg.in/gomail.v2"
 )
 
@@ -20,10 +18,10 @@ type EmailRequest struct {
 // SendVerificationEmail sends a verification email
 func SendVerificationEmail(email string, username string, verifyCode string) (map[string]interface{}, error) {
 	// SMTP server configuration
-	smtpServer := "smtp.gmail.com"       // Replace with your SMTP server
-	smtpPort := 587                      // Replace with your SMTP port
-	smtpUser := os.Getenv("smtpUser")    // Replace with your SMTP username
-	smtpPassword := os.Getenv("API_KEY") // Replace with your SMTP password
+	smtpServer := "smtp.gmail.com"                  // Replace with your SMTP server
+	smtpPort := 587                                 // Replace with your SMTP port
+	smtpUser := "vmxvzuekcstjpixx"                  // Replace with your SMTP username
+	smtpPassword := "ashutosh.linkedin14@gmail.com" // Replace with your SMTP password
 
 	// Create a new email message
 	m := gomail.NewMessage()
@@ -275,17 +273,15 @@ func VerificationEmail(username string, verifyCode string) string {
 
 func main() {
 	// Example usage
-	err := godotenv.Load()
+	//err := godotenv.Load()
 
-	if err != nil {
-		log.Fatal("Error Loading Api key")
-	}
+	// if err != nil {
+	// 	log.Fatal("Error Loading Api key")
+	// }
 
 	http.HandleFunc("/send-verification-email", handleSendEmail)
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080" // Default port
-	}
+	port := "8010"
+
 	log.Printf("Server starting on port %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
