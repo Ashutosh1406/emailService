@@ -18,10 +18,10 @@ type EmailRequest struct {
 // SendVerificationEmail sends a verification email
 func SendVerificationEmail(email string, username string, verifyCode string) (map[string]interface{}, error) {
 	// SMTP server configuration
-	smtpServer := "smtp.gmail.com"                  // Replace with your SMTP server
-	smtpPort := 587                                 // Replace with your SMTP port
-	smtpUser := "vmxvzuekcstjpixx"                  // Replace with your SMTP username
-	smtpPassword := "ashutosh.linkedin14@gmail.com" // Replace with your SMTP password
+	smtpServer := "smtp.gmail.com"              // Replace with your SMTP server
+	smtpPort := 587                             // Replace with your SMTP port
+	smtpUser := "ashutosh.linkedin14@gmail.com" // Replace with your SMTP username
+	smtpPassword := "vmxvzuekcstjpixx"          // Replace with your SMTP password
 
 	// Create a new email message
 	m := gomail.NewMessage()
