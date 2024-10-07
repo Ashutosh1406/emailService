@@ -21,7 +21,7 @@ func SendVerificationEmail(email string, username string, verifyCode string) (ma
 	smtpServer := "smtp.gmail.com"              // Replace with your SMTP server
 	smtpPort := 587                             // Replace with your SMTP port
 	smtpUser := "ashutosh.linkedin14@gmail.com" // Replace with your SMTP username
-	smtpPassword := "fqvbvuctfnufnhqn"          // Replace with your SMTP password
+	smtpPassword := "gyeiiqhxrzwjnqtc"          // Replace with your SMTP password
 
 	// Create a new email message
 	m := gomail.NewMessage()
