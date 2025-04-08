@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"gopkg.in/gomail.v2"
 )
@@ -171,105 +173,16 @@ func VerificationEmail(username string, verifyCode string) string {
     `, verifyCode, username)
 }
 
-// func VerificationEmail(username string, verifyCode string) string {
-// 	return fmt.Sprintf(`
-//         <html lang="en">
-//         <head>
-//             <meta charset="UTF-8">
-//             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//             <title>Verification Code | MYSTERIFY </title>
-//             <style>
-//                 body {
-//                     margin: 0;
-//                     padding: 0;
-//                     display: flex;
-//                     justify-content: center;
-//                     align-items: center;
-//                     height: 100vh;
-//                     background: #333; /* Dark background color */
-//                 }
-//                 .card-container {
-//                     max-width: 640px;
-//                     margin: 0 auto;
-//                     box-sizing: border-box;
-//                     padding: 16px;
-//                     border-radius: 12px;
-//                     border: 1px solid rgba(255, 255, 255, 0.2); /* Light border for glassmorphism */
-//                     background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
-//                     backdrop-filter: blur(10px); /* Frosted glass effect */
-//                     -webkit-backdrop-filter: blur(10px); /* Safari compatibility */
-//                     color: #fff;
-//                 }
-//                 .card-container table {
-//                     width: 100%%;
-//                     border-collapse: collapse;
-//                 }
-//                 .card-container td {
-//                     padding-right: 16px;
-//                 }
-//                 .card-container p {
-//                     margin: 0;
-//                 }
-//                 .card-container .header {
-//                     color: #7449c4;
-//                     font-family: 'Arial', sans-serif;
-//                     font-size: 18px;
-//                     font-weight: 700;
-//                     line-height: 24px;
-//                 }
-//                 .card-container .details {
-//                     color: #ddd;
-//                     font-family: 'Arial', sans-serif;
-//                     font-size: 14px;
-//                     font-weight: 400;
-//                     line-height: 20px;
-//                     margin-top: 4px;
-//                 }
-//                 .card-container .verification-code {
-//                     font-size: 24px;
-//                     font-weight: 700;
-//                     color: #FFD700;
-//                     text-shadow: 0 0 5px #FFD700, 0 0 10px #FFD700;
-//                     text-align: center;
-//                     margin: 20px 0;
-//                 }
-//                 .card-container .cardowner {
-//                     font-size: 16px;
-//                     color: #aaa;
-//                     text-align: center;
-//                 }
-//             </style>
-//         </head>
-//         <body>
-//             <div class="card-container">
-//                 <table>
-//                     <tbody>
-//                         <tr>
-//                             <td>
-//                                 <p class="header">Verification Code - MYSTERIFY</p>
-//                                 <p class="verification-code">%s</p>
-//                                 <p class="cardowner">%s</p>
-//                             </td>
-//                         </tr>
-//                     </tbody>
-//                 </table>
-//             </div>
-//         </body>
-//         </html>
-//     `, verifyCode, username)
-// }
+func handleKeepAlive(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("I'm alive!"))
+}
 
-// func VerificationEmail(username string, verifyCode string) string {
-// 	return fmt.Sprintf(`
-//         <html>
-//             <body>
-//                 <p>Hello %s,</p>
-//                 <p>Your verification code is: <strong>%s</strong></p>
-//                 <p>Thank you!</p>
-//             </body>
-//         </html>
-//     `, username, verifyCode)
-// }
+func randomPingInterval() time.Duration {
+	min := 90  // 1.5 minutes in seconds
+	max := 120 // 2 minutes in seconds
+	seconds := rand.Intn(max-min+1) + min
+	return time.Duration(seconds) * time.Second
+}
 
 func main() {
 	// Example usage
@@ -280,8 +193,23 @@ func main() {
 	// }
 
 	http.HandleFunc("/send-verification-email", handleSendEmail)
+	http.HandleFunc("/keep-alive", handleKeepAlive)
 	port := "8010"
 
 	log.Printf("Server starting on port %s", port)
+
+	go func() {
+		for {
+			url := "http://localhost:" + port + "/keep-alive"
+			resp, err := http.Get(url)
+			if err != nil {
+				log.Printf("Keep-alive ping failed: %v", err)
+			} else {
+				log.Println("Keep-alive ping successful")
+				resp.Body.Close()
+			}
+			time.Sleep(randomPingInterval())
+		}
+	}()
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
